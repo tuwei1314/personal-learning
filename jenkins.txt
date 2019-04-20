@@ -1,0 +1,6 @@
+安装jdk环境，然后按照网站进行安装http://pkg.jenkins.io/redhat-stable/
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+yum install jenkins
+后台登陆
+配置文件 vim /etc/sysconfig/jenkins

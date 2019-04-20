@@ -1,0 +1,48 @@
+gitlab部署 参考  https://blog.51cto.com/flyfish225/2145495
+
+下载gitlab 最新版
+
+https://packages.gitlab.com/gitlab/gitlab-ce/
+安装环境初始化
+yum install curl policycoreutils openssh-server openssh-clients postfix  -y
+默认，使用 Postfix 发送邮件
+
+service postfix start 
+chkconfig postfix on 
+systemctl stop firewalld
+systemctl disable firewalld
+安装gitlab-ce
+配置并启动GitLab
+gitlab-ctl reconfigure  #重新配置应用程序。相当于初始化一下
+gitlab-ctl status
+vim /etc/gitlab/gitlab.rb
+external_url 'http://ip:8899'
+unicorn['port'] = 8899
+sed -i '13s#http://gitlab.example.com#http://192.168.217.30:8899#' /etc/gitlab/gitlab.rb
+改：13 external_url 'http://gitlab.example.com'
+为：13 external_url 'http://192.168.217.30:8899' 
+添加unicorn['port'] =8899  ，防止端口冲突  
+gitlab的管理
+
+关闭gitlab： # gitlab-ctl stop
+启动gitlab： # gitlab-ctl start
+重启gitlab： # gitlab-ctl restart
+登陆后台
+安装git yum install git
+注册普通用户tuwei
+git config --global user.name "tuwei"
+git config --global user.email "1530213847@qq.com"
+git clone git@192.168.217.30:tuwei/test01.git
+cd test01
+touch test.md
+git add test.md
+git commit -m "add test.md"
+git push -u origin master
+
+
+创建root密码
+gitlab-rails console production 命令 开始初始化密码
+u=User.where(id:1).first 
+u.password='12345678'设置密码为12345678(这里的密码看自己喜欢)：
+u.password_confirmation='12345678' 再次确认密码
+u.save!进行保存（切记切记 后面的 !）
