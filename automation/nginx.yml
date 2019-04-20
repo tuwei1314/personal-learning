@@ -1,0 +1,38 @@
+- hosts: webservers
+  gather_facts: no
+  vars:
+    hello: ansible
+  tasks:
+  - name: Add repo
+    yum_repository:
+      name: nginx
+      description: nginx
+      baseurl: http://nginx.org/packages/centos/6/$basearch/
+      gpgcheck: no
+      enabled: 1
+  - name: install nginx
+    yum:
+      name: nginx
+      state: latest
+    tags: install
+  - name: copy nginx configuration file
+    copy:
+      src: ./site.conf
+      dest: /etc/nginx/conf.d/site.conf
+    notify:
+    - reload nginx
+    tags: configuration
+  - name: start nginx
+    service:
+      name: nginx
+      state: started
+  - name: create website file
+    file:
+      dest: /var/www/html1
+      state: directory
+  - name: create test page index.html
+    shell: echo "test {{hello}}" > /var/www/html1/index.html
+  handlers:
+    - name: reload nginx
+      service: name=nginx state=reloaded
+    

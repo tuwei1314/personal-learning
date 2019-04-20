@@ -1,0 +1,8 @@
+# main.yml
+# ---
+- hosts: webservers
+  tasks:
+    - name: install lrzsz
+      yum:
+        name: lrzsz
+        state: latest
