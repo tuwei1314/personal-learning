@@ -1,0 +1,14 @@
+- hosts: webservers
+  gather_facts: no
+  vars:
+    http_port: 80
+    server_name: www.ctnrs.com
+ 
+  tasks:
+    - name: Copy nginx configuration file 
+      template: src=site.conf.j2 dest=/etc/nginx/conf.d/www.ctnrs.com.conf
+      notify: reload nginx
+ 
+  handlers:
+    - name: reload nginx
+      service: name=nginx state=reloaded

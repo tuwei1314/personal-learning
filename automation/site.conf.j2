@@ -1,0 +1,16 @@
+# site.conf.j2 
+{% set list=[10, 12, 13, 25, 31] %}
+upstream {{server_name}} {
+    {% for i in list %}
+       server 192.168.1.{{i}}:80;
+    {% endfor %}
+}
+server {
+    listen       {{ http_port }};
+    server_name  {{ server_name }};
+ 
+    location / {
+        proxy_pass http://{{server_name}};
+    } 
+}
+
