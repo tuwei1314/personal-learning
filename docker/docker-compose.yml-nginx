@@ -1,0 +1,10 @@
+version: "3"
+services:
+  nginx:
+    container_name: www-nginx
+    image: nginx:latest
+    restart: always
+    ports:
+      - 90:80
+    volumes:
+    - /data/webapps/www/:/usr/share/nginx/html/
