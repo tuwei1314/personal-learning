@@ -1,0 +1,38 @@
+node{
+    
+    stage('代码拉取'){
+        
+        git credentialsId: '2558f566-6f8d-4823-b413-707dea166d15', url: 'git@192.168.217.30:tuwei/test01.git'
+    }
+	
+	
+	stage('Git Checkout') { 
+        checkout([$class: 'GitSCM', branches: [[name: '$Tag']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'git@github.com:tuwei1314/test01.git']]])
+   }  // $Tag引用用户交互输入的tag，根据参数构建作业，先把服务器公钥放到github端
+    stage('代码编译'){
+        
+        sh '''
+        export JAVA_HOME=/usr/local/jdk1.8
+        /usr/local/maven3.6/bin/mvn clean package -Dmaven.test.skip=true
+        '''
+    }
+    stage('built docker images'){
+        
+       sh '''
+       REPOSITORY=solo
+        cat >Dockerfile <<EOF
+        FROM tomcat:latest
+        RUN rm -rf /usr/local/tomcat/webapps/ROOT
+        COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
+        CMD ["catalina.sh", "run"]
+        EOF
+        docker build -t $REPOSITORY .
+        ''' 
+    }
+    stage('deploy'){
+      sh '''
+      docker run -itd --name blog-solo -v /usr/local/jdk1.8:/usr/local/jdk -p 88:8080 $REPOSITORY /bin/bash
+   '''
+}
+    
+}
