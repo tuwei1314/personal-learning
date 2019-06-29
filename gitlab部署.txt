@@ -46,3 +46,23 @@ u=User.where(id:1).first
 u.password='12345678'设置密码为12345678(这里的密码看自己喜欢)：
 u.password_confirmation='12345678' 再次确认密码
 u.save!进行保存（切记切记 后面的 !）
+
+容器部署：
+
+安装docker：
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
+yum -y install docker-ce
+systemctl start docker
+systemctl enable  docker
+docker pull gitlab/gitlab-ce
+mkdir -p /data/docker/gitlab/{config,data,logs}
+
+启动容器
+docker run -itd --name gitlab --hostname gitlab \
+--restart always -p 4443:443 -p 8888:80 -p 2222:22 \
+-v /data/docker/gitlab/config:/etc/gitlab \
+-v /data/docker/gitlab/data:/var/opt/gitlab \
+-v /data/docker/gitlab/logs:/var/log/gitlab \
+gitlab/gitlab-ce:latest
+访问 本机IP地址:8888
